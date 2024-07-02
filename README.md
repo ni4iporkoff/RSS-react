@@ -1,1 +1,1 @@
-# RSS-react-class-components
+# React + TypeScript + Vite
