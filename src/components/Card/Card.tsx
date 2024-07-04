@@ -34,12 +34,13 @@ export default class Card extends Component<
   }
 
   render() {
-    const { name, abilities, height } = this.state;
+    const { name, abilities, height, weight } = this.state;
     return (
       <div className="card">
-        <div className="card-name">Name: {name}</div>
-        <div className="card-name">Height: {height}</div>
-        <ul className="abilities">
+        <div className="card-item">Name: {name}</div>
+        <div className="card-item">Height: {height}</div>
+        <div className="card-item">Weight: {weight}</div>
+        <ul className="card-item abilities">
           Abilities:
           {abilities
             ? abilities?.map((ability: IPokemonAbility) => {
