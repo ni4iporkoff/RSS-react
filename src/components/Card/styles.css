@@ -1,0 +1,18 @@
+.card {
+  margin: 0.5rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.87);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+
+  .abilities {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    height: 6rem;
+    width: 9rem;
+  }
+
+  .abilities-item {
+    padding-left: 0.25rem;
+  }
+}
