@@ -46,11 +46,7 @@ class App extends Component<Record<string, never>, IAppState> {
     return (
       <>
         <Search handleData={this.handleData} />
-        {this.state.loading ? (
-          'Loading...'
-        ) : (
-          <Cards fetchedData={fetchedData} />
-        )}
+        {this.state.loading ? <Loader /> : <Cards fetchedData={fetchedData} />}
       </>
     );
   }
