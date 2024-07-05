@@ -1,57 +1,16 @@
 import { Component } from 'react';
-import { IPokemon, IPokemonAbility, IPokemonStat } from '../../lib/definitions';
-import { fetchPokemon } from '../../lib/data';
+
 import './styles.css';
+import { ICharacter } from '../../lib/definitions';
 
-export interface IPokemonState {
-  id: number | null;
-  abilities: IPokemonAbility[] | null;
-  height: number | null;
-  name: string | null;
-  stats: IPokemonStat[] | null;
-  weight: number | null;
-}
-
-export default class Card extends Component<
-  { pokemon: IPokemon },
-  IPokemonState
-> {
-  constructor(props: { pokemon: IPokemon }) {
-    super(props);
-    this.state = {
-      id: null,
-      abilities: null,
-      height: null,
-      name: null,
-      stats: null,
-      weight: null,
-    };
-  }
-
-  async componentDidMount() {
-    const pokemonData = await fetchPokemon(this.props.pokemon.url);
-    this.setState({ ...pokemonData });
-  }
-
+export default class Card extends Component<{ charater: ICharacter }> {
   render() {
-    const { name, abilities, height, weight } = this.state;
+    const { name, height, mass } = this.props.charater;
     return (
       <div className="card">
         <div className="card-item">Name: {name}</div>
         <div className="card-item">Height: {height}</div>
-        <div className="card-item">Weight: {weight}</div>
-        <ul className="card-item abilities">
-          Abilities:
-          {abilities
-            ? abilities?.map((ability: IPokemonAbility) => {
-                return (
-                  <li key={ability.ability.name} className="abilities-item">
-                    - {ability.ability.name}
-                  </li>
-                );
-              })
-            : 'No pokemon data'}
-        </ul>
+        <div className="card-item">Weight: {mass}</div>
       </div>
     );
   }

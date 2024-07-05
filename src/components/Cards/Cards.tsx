@@ -1,52 +1,18 @@
 import { Component } from 'react';
 import Card from '../Card/Card';
-import { fetchPokemons } from '../../lib/data';
-import { IData } from '../../lib/definitions';
 import './styles.css';
+import { ICharacter } from '../../lib/definitions';
 
-interface ICardsState {
-  data: IData | null;
-  loading: boolean;
-}
-
-export default class Cards extends Component<
-  Record<string, never>,
-  ICardsState
-> {
-  constructor(props: Record<string, never>) {
-    super(props);
-    this.state = {
-      data: null,
-      loading: true,
-    };
-  }
-
-  async componentDidMount() {
-    const data = await fetchPokemons();
-    this.setState({
-      data,
-      loading: false,
-    });
-  }
-
+export default class Cards extends Component<{ fetchedData: ICharacter[] }> {
   render() {
-    const { data, loading } = this.state;
-
-    const pokemons = data?.results;
-    if (loading) {
-      return <div>Loading...</div>;
-    }
-
-    if (!data || !pokemons) {
-      return <div>No data available</div>;
-    }
+    const charaters = this.props.fetchedData;
 
     return (
       <ul className="cards">
-        {pokemons.map((pokemon) => {
+        {charaters.map((charater) => {
           return (
-            <li key={pokemon.name}>
-              <Card pokemon={pokemon} />
+            <li key={charater.name}>
+              <Card charater={charater} />
             </li>
           );
         })}
