@@ -5,6 +5,7 @@ import Search from './components/Search/Search';
 import { IData } from './lib/definitions';
 import { fetchCharacters, fetchSearchCharacters } from './lib/data';
 import Loader from './components/Loader/Loader';
+import PlugText from './components/PlugText/PlugText';
 
 interface IAppState {
   data: IData | null;
@@ -49,7 +50,12 @@ class App extends Component<Record<string, never>, IAppState> {
     return (
       <>
         <Search handleSearch={this.handleSearch} />
-        {this.state.loading ? <Loader /> : <Cards fetchedData={fetchedData} />}
+        {this.state.loading && <Loader />}
+        {fetchedData.length === 0 && !this.state.loading ? (
+          <PlugText text={'Unfortunately, we haven`t found anything for you'} />
+        ) : (
+          <Cards fetchedData={fetchedData} />
+        )}
       </>
     );
   }
