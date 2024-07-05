@@ -1,10 +1,8 @@
 import { ChangeEvent, Component, FormEvent } from 'react';
 import './styles.css';
-import { IData } from '../../lib/definitions';
-import { fetchSearchCharacters } from '../../lib/data';
 
 interface ISearchProps {
-  handleData: (data: IData) => void;
+  handleSearch: (searchedValue: string) => void;
 }
 
 interface ISearchState {
@@ -23,10 +21,9 @@ export default class Search extends Component<ISearchProps, ISearchState> {
     this.setState({ inputValue: e.target.value });
   };
 
-  handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const searchedData = await fetchSearchCharacters(this.state.inputValue);
-    this.props.handleData(searchedData);
+    this.props.handleSearch(this.state.inputValue);
     localStorage.setItem('searchValue', this.state.inputValue);
   };
 

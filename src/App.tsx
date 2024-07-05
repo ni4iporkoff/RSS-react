@@ -4,6 +4,7 @@ import Cards from './components/Cards/Cards';
 import Search from './components/Search/Search';
 import { IData } from './lib/definitions';
 import { fetchCharacters, fetchSearchCharacters } from './lib/data';
+import Loader from './components/Loader/Loader';
 
 interface IAppState {
   data: IData | null;
@@ -35,8 +36,10 @@ class App extends Component<Record<string, never>, IAppState> {
     });
   };
 
-  handleData = (data: IData) => {
-    this.setState({ data });
+  handleSearch = async (searchedValue: string) => {
+    this.setState({ loading: true });
+    const searchedData = await fetchSearchCharacters(searchedValue);
+    this.setState({ loading: false, data: searchedData });
   };
 
   render() {
@@ -45,7 +48,7 @@ class App extends Component<Record<string, never>, IAppState> {
 
     return (
       <>
-        <Search handleData={this.handleData} />
+        <Search handleSearch={this.handleSearch} />
         {this.state.loading ? <Loader /> : <Cards fetchedData={fetchedData} />}
       </>
     );
