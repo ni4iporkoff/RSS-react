@@ -8,3 +8,14 @@ export const fetchCharacters = async () => {
   const data: IData = await response.json();
   return data;
 };
+
+export const fetchSearchCharacters = async (charater: string) => {
+  const response = await fetch(
+    `https://swapi.dev/api/people/?search=${charater}`
+  );
+
+  if (!response.ok) throw new Error('Could not fetch searched charaters');
+
+  const data: IData = await response.json();
+  return data;
+};

@@ -1,18 +1,21 @@
 import { ChangeEvent, Component, FormEvent } from 'react';
 import './styles.css';
+import { IData } from '../../lib/definitions';
+import { fetchSearchCharacters } from '../../lib/data';
+
+interface ISearchProps {
+  handleData: (data: IData) => void;
+}
 
 interface ISearchState {
   inputValue: string;
 }
 
-export default class Search extends Component<
-  Record<string, never>,
-  ISearchState
-> {
-  constructor(props: Record<string, never>) {
+export default class Search extends Component<ISearchProps, ISearchState> {
+  constructor(props: ISearchProps) {
     super(props);
     this.state = {
-      inputValue: '',
+      inputValue: localStorage.getItem('searchValue') || '',
     };
   }
 
@@ -20,9 +23,11 @@ export default class Search extends Component<
     this.setState({ inputValue: e.target.value });
   };
 
-  handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+  handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    localStorage.setItem('searchInputValue', this.state.inputValue);
+    const searchedData = await fetchSearchCharacters(this.state.inputValue);
+    this.props.handleData(searchedData);
+    localStorage.setItem('searchValue', this.state.inputValue);
   };
 
   render() {
