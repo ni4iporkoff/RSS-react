@@ -6,11 +6,13 @@ import { IData } from './lib/definitions';
 import { fetchCharacters, fetchSearchCharacters } from './lib/data';
 import Loader from './components/Loader/Loader';
 import PlugText from './components/PlugText/PlugText';
+import './App.css';
 
 interface IAppState {
   data: IData | null;
   loading: boolean;
   searchValue: string | null;
+  error: boolean;
 }
 
 class App extends Component<Record<string, never>, IAppState> {
@@ -20,42 +22,69 @@ class App extends Component<Record<string, never>, IAppState> {
       data: null,
       loading: true,
       searchValue: localStorage.getItem('searchValue'),
+      error: false,
     };
   }
 
   componentDidMount = async () => {
     let data: IData;
-    if (this.state.searchValue) {
-      data = await fetchSearchCharacters(this.state.searchValue);
-    } else {
-      data = await fetchCharacters();
-    }
 
-    this.setState({
-      data,
-      loading: false,
-    });
+    try {
+      if (this.state.searchValue) {
+        data = await fetchSearchCharacters(this.state.searchValue);
+      } else {
+        data = await fetchCharacters();
+      }
+
+      this.setState({
+        data,
+        loading: false,
+      });
+    } catch (error) {
+      this.setState({ error: true });
+    }
   };
 
   handleSearch = async (searchedValue: string) => {
     this.setState({ loading: true });
-    const searchedData = await fetchSearchCharacters(searchedValue);
-    this.setState({ loading: false, data: searchedData });
+
+    try {
+      const searchedData = await fetchSearchCharacters(searchedValue);
+      this.setState({ loading: false, data: searchedData });
+    } catch (error) {
+      this.setState({ error: true });
+      throw error;
+    }
+  };
+
+  generateError = () => {
+    this.setState({ error: true });
   };
 
   render() {
-    const { data } = this.state;
+    const { data, error } = this.state;
     const fetchedData = data?.results || [];
+
+    if (error) throw new Error('Error in App');
 
     return (
       <>
-        <Search handleSearch={this.handleSearch} />
-        {this.state.loading && <Loader />}
-        {fetchedData.length === 0 && !this.state.loading ? (
-          <PlugText text={'Unfortunately, we haven`t found anything for you'} />
-        ) : (
-          <Cards fetchedData={fetchedData} />
-        )}
+        <header className="header">
+          <Search handleSearch={this.handleSearch} />
+          <button onClick={this.generateError} className="error-btn">
+            Click for generate error
+          </button>
+        </header>
+        <main>
+          {this.state.loading && <Loader />}
+          {fetchedData.length === 0 && !this.state.loading ? (
+            <PlugText
+              text={'Unfortunately, we haven`t found anything for you'}
+            />
+          ) : (
+            <Cards fetchedData={fetchedData} />
+          )}
+        </main>
       </>
     );
   }

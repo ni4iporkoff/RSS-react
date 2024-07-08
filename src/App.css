@@ -1,0 +1,23 @@
+.header {
+  position: relative;
+
+  .error-btn {
+    position: absolute;
+    right: 0;
+    margin-right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 3rem;
+    background: transparent;
+    border: 1px dotted rgba(255, 255, 255, 0.87);
+    border-radius: 2rem;
+    color: rgba(255, 255, 255, 0.87);
+    padding: 1rem;
+  }
+
+  .error-btn:hover {
+    color: rgba(0, 0, 0, 0.87);
+    background-color: rgba(255, 255, 255, 0.87);
+    cursor: pointer;
+  }
+}
