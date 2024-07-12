@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import Cards from './components/Cards/Cards';
 import Search from './components/Search/Search';
@@ -8,86 +8,70 @@ import Loader from './components/Loader/Loader';
 import PlugText from './components/PlugText/PlugText';
 import './App.css';
 
-interface IAppState {
-  data: IData | null;
-  loading: boolean;
-  searchValue: string | null;
-  error: boolean;
-}
+const App = () => {
+  const [data, setData] = useState<IData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-class App extends Component<Record<string, never>, IAppState> {
-  constructor(props: Record<string, never>) {
-    super(props);
-    this.state = {
-      data: null,
-      loading: true,
-      searchValue: localStorage.getItem('searchValue'),
-      error: false,
-    };
-  }
+  const searchValue = localStorage.getItem('searchValue') || '';
 
-  componentDidMount = async () => {
+  useEffect(() => {
     let data: IData;
+    const fetchData = async () => {
+      try {
+        if (searchValue) {
+          data = await fetchSearchCharacters(searchValue);
+        } else {
+          data = await fetchCharacters();
+        }
 
-    try {
-      if (this.state.searchValue) {
-        data = await fetchSearchCharacters(this.state.searchValue);
-      } else {
-        data = await fetchCharacters();
+        setData(data);
+        setLoading(false);
+      } catch (error) {
+        setError(true);
       }
+    };
+    fetchData();
+  }, [searchValue]);
 
-      this.setState({
-        data,
-        loading: false,
-      });
-    } catch (error) {
-      this.setState({ error: true });
-    }
-  };
-
-  handleSearch = async (searchedValue: string) => {
-    this.setState({ loading: true });
+  const handleSearch = async (searchedValue: string) => {
+    setLoading(true);
 
     try {
       const searchedData = await fetchSearchCharacters(searchedValue);
-      this.setState({ loading: false, data: searchedData });
+      setData(searchedData);
+      setLoading(false);
     } catch (error) {
-      this.setState({ error: true });
+      setError(true);
       throw error;
     }
   };
 
-  generateError = () => {
-    this.setState({ error: true });
+  const generateError = () => {
+    setError(true);
   };
 
-  render() {
-    const { data, error } = this.state;
-    const fetchedData = data?.results || [];
+  const fetchedData = data?.results || [];
+  if (error) throw new Error('Error in App');
 
-    if (error) throw new Error('Error in App');
-
-    return (
-      <>
-        <header className="header">
-          <Search handleSearch={this.handleSearch} />
-          <button onClick={this.generateError} className="error-btn">
-            Click for generate error
-          </button>
-        </header>
-        <main>
-          {this.state.loading && <Loader />}
-          {fetchedData.length === 0 && !this.state.loading ? (
-            <PlugText
-              text={'Unfortunately, we haven`t found anything for you'}
-            />
-          ) : (
-            <Cards fetchedData={fetchedData} />
-          )}
-        </main>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <header className="header">
+        <Search handleSearch={handleSearch} />
+        <button onClick={generateError} className="error-btn">
+          Click for generate error
+        </button>
+      </header>
+      <main>
+        {loading && <Loader />}
+        {fetchedData.length === 0 && !loading ? (
+          <PlugText text={'Unfortunately, we haven`t found anything for you'} />
+        ) : (
+          <Cards fetchedData={fetchedData} />
+        )}
+      </main>
+    </>
+  );
+};
 
 export default App;
