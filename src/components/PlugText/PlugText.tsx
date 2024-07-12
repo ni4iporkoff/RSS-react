@@ -1,16 +1,15 @@
-import { Component } from 'react';
 import './styles.css';
 
-interface PlugTextProps {
+interface IPlugTextProps {
   text: string;
 }
 
-export default class PlugText extends Component<PlugTextProps> {
-  render() {
-    return (
-      <div className="plug">
-        <p>{this.props.text}</p>
-      </div>
-    );
-  }
-}
+const PlugText = ({ text }: IPlugTextProps) => {
+  return (
+    <div className="plug">
+      <p>{text}</p>
+    </div>
+  );
+};
+
+export default PlugText;
