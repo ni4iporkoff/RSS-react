@@ -1,7 +1,9 @@
 import { IData } from './definitions';
 
-export const fetchCharacters = async () => {
-  const response = await fetch(`https://swapi.dev/api/people`);
+export const fetchCharacters = async (currentPage = '1') => {
+  const response = await fetch(
+    `https://swapi.dev/api/people/?page=${currentPage}`
+  );
 
   if (!response.ok) throw new Error('Could not fetch charaters');
 
