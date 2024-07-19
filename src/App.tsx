@@ -9,13 +9,24 @@ import PlugText from './components/PlugText/PlugText';
 import './App.css';
 import React from 'react';
 import Pagination from './components/Pagination.tsx/Pagination';
+import { useLoaderData, useNavigate } from 'react-router-dom';
+
+interface ICharactersLoaderData {
+  charactersData: IData;
+  initialPage: string | undefined;
+}
 
 const App = () => {
+  const { charactersData, initialPage } =
+    useLoaderData() as ICharactersLoaderData;
+
+  const navigate = useNavigate();
+
   const [data, setData] = useState<IData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(Number(initialPage) || 1);
   const [pageQty, setPageQty] = useState(0);
   const CHARACTER_PER_PAGE = 10;
 
@@ -28,7 +39,7 @@ const App = () => {
         if (searchValue) {
           data = await fetchSearchCharacters(searchValue);
         } else {
-          data = await fetchCharacters();
+          data = charactersData;
         }
 
         setData(data);
@@ -39,7 +50,7 @@ const App = () => {
       }
     };
     fetchData();
-  }, [searchValue]);
+  }, [charactersData, searchValue]);
 
   const handleSearch = async (searchedValue: string) => {
     setLoading(true);
@@ -63,6 +74,7 @@ const App = () => {
 
   const handlePage = async (page: number) => {
     if (page < 1 || page > pageQty) return;
+    navigate(`?page=${page}`);
 
     setCurrentPage(() => page);
     const pageData = await fetchCharacters(page.toString());
@@ -84,6 +96,7 @@ const App = () => {
         ) : (
           <Cards fetchedData={fetchedData} />
         )}
+
         <Pagination
           currentPage={currentPage}
           handlePage={handlePage}

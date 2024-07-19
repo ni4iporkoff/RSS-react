@@ -5,11 +5,13 @@ import App from './App.tsx';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary.tsx';
 import NotFound from './components/NotFound/NotFound.tsx';
+import { charactersLoader } from './lib/loaders.ts';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+    loader: charactersLoader,
   },
   {
     path: '*',

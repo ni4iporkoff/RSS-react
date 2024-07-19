@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './styles.css';
+import { Link } from 'react-router-dom';
 
 interface IPaginationProps {
   currentPage: number;
@@ -13,7 +14,7 @@ const Pagination = ({ currentPage, handlePage, pageQty }: IPaginationProps) => {
 
   useEffect(() => {
     renderPages();
-  });
+  }, [startPosition]);
 
   const renderPages = () => {
     const pagesNumbers: number[] = [];
@@ -67,7 +68,7 @@ const Pagination = ({ currentPage, handlePage, pageQty }: IPaginationProps) => {
               className={className}
               onClick={() => handlePage(page)}
             >
-              {page}
+              <Link to={`?page=${page}`}>{page}</Link>
             </li>
           );
         })}
