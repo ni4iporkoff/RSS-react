@@ -7,11 +7,17 @@ import { fetchCharacters, fetchSearchCharacters } from './lib/data';
 import Loader from './components/Loader/Loader';
 import PlugText from './components/PlugText/PlugText';
 import './App.css';
+import React from 'react';
+import Pagination from './components/Pagination.tsx/Pagination';
 
 const App = () => {
   const [data, setData] = useState<IData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageQty, setPageQty] = useState(0);
+  const CHARACTER_PER_PAGE = 10;
 
   const searchValue = localStorage.getItem('searchValue') || '';
 
@@ -26,6 +32,7 @@ const App = () => {
         }
 
         setData(data);
+        setPageQty(Math.ceil(data.count / CHARACTER_PER_PAGE));
         setLoading(false);
       } catch (error) {
         setError(true);
@@ -54,6 +61,14 @@ const App = () => {
   const fetchedData = data?.results || [];
   if (error) throw new Error('Error in App');
 
+  const handlePage = async (page: number) => {
+    if (page < 1 || page > pageQty) return;
+
+    setCurrentPage(() => page);
+    const pageData = await fetchCharacters(page.toString());
+    setData(pageData);
+  };
+
   return (
     <>
       <header className="header">
@@ -69,6 +84,11 @@ const App = () => {
         ) : (
           <Cards fetchedData={fetchedData} />
         )}
+        <Pagination
+          currentPage={currentPage}
+          handlePage={handlePage}
+          pageQty={pageQty}
+        />
       </main>
     </>
   );
