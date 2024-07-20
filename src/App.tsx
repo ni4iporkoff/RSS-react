@@ -9,7 +9,7 @@ import PlugText from './components/PlugText/PlugText';
 import './App.css';
 import React from 'react';
 import Pagination from './components/Pagination.tsx/Pagination';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData, useNavigate, Outlet } from 'react-router-dom';
 
 interface ICharactersLoaderData {
   charactersData: IData;
@@ -89,12 +89,15 @@ const App = () => {
           Click for generate error
         </button>
       </header>
-      <main>
+      <main className="main">
         {loading && <Loader />}
         {fetchedData.length === 0 && !loading ? (
           <PlugText text={'Unfortunately, we haven`t found anything for you'} />
         ) : (
-          <Cards fetchedData={fetchedData} />
+          <section className="details">
+            <Cards fetchedData={fetchedData} />
+            <Outlet />
+          </section>
         )}
 
         <Pagination

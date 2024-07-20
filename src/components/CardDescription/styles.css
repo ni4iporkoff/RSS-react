@@ -1,0 +1,7 @@
+.card-details {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  border: 2px dotted red;
+  border-radius: 2rem;
+}

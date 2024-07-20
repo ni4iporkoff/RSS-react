@@ -5,13 +5,21 @@ import App from './App.tsx';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary.tsx';
 import NotFound from './components/NotFound/NotFound.tsx';
-import { charactersLoader } from './lib/loaders.ts';
+import { characterLoader, charactersLoader } from './lib/loaders.ts';
+import CardDetails from './components/CardDescription/CardDetails.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     loader: charactersLoader,
+    children: [
+      {
+        path: '/cards/:cardID',
+        element: <CardDetails />,
+        loader: characterLoader,
+      },
+    ],
   },
   {
     path: '*',
