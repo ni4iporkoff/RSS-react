@@ -1,10 +1,11 @@
-import spinner from '../../assets/gears-spinner.svg';
+import React from 'react';
+import circles from '../../assets/bouncing-circles.svg';
 import './styles.css';
 
 const Loader = () => {
   return (
     <div className="loader">
-      <img src={spinner} width={100} height={100} alt="Loading..." />
+      <img src={circles} width={100} height={100} alt="Loading..." />
     </div>
   );
 };

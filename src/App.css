@@ -27,6 +27,19 @@
   flex-direction: column;
 }
 
-.details {
+.content {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 25rem;
+  margin: 0 20px;
+  flex: 1;
+}
+
+.cards-content {
+  width: 100%;
+}
+
+.outlet-content {
+  margin-left: auto;
 }

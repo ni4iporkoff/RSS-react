@@ -75,11 +75,13 @@ const App = () => {
 
   const handlePage = async (page: number) => {
     if (page < 1 || page > pageQty) return;
+    setLoading(true);
     navigate(`?page=${page}`);
 
     setCurrentPage(() => page);
     const pageData = await fetchCharacters(page.toString());
     setData(pageData);
+    setLoading(false);
   };
 
   return (
@@ -91,13 +93,16 @@ const App = () => {
         </button>
       </header>
       <main className="main">
-        {loading && <Loader />}
         {fetchedData.length === 0 && !loading ? (
           <PlugText text={'Unfortunately, we haven`t found anything for you'} />
         ) : (
-          <section className="details">
-            <Cards fetchedData={fetchedData} />
-            <Outlet />
+          <section className="content">
+            <div className="cards-content">
+              {loading ? <Loader /> : <Cards fetchedData={fetchedData} />}
+            </div>
+            <div className="outlet-content">
+              <Outlet />
+            </div>
           </section>
         )}
 
