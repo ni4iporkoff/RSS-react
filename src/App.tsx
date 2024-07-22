@@ -1,15 +1,16 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
-import './App.css';
+import { useLoaderData, useNavigate, Outlet } from 'react-router-dom';
+
 import Cards from './components/Cards/Cards';
 import Search from './components/Search/Search';
-import { IData } from './lib/definitions';
-import { fetchCharacters, fetchSearchCharacters } from './lib/data';
+import Pagination from './components/Pagination.tsx/Pagination';
 import Loader from './components/Loader/Loader';
 import PlugText from './components/PlugText/PlugText';
+
+import { fetchCharacters, fetchSearchCharacters } from './lib/data';
+import { IData } from './lib/definitions';
 import './App.css';
-import React from 'react';
-import Pagination from './components/Pagination.tsx/Pagination';
-import { useLoaderData, useNavigate, Outlet } from 'react-router-dom';
 
 interface ICharactersLoaderData {
   charactersData: IData;
@@ -33,20 +34,18 @@ const App = () => {
   const searchValue = localStorage.getItem('searchValue') || '';
 
   useEffect(() => {
-    let data: IData;
     const fetchData = async () => {
       try {
-        if (searchValue) {
-          data = await fetchSearchCharacters(searchValue);
-        } else {
-          data = charactersData;
-        }
-
+        const data = searchValue
+          ? await fetchSearchCharacters(searchValue)
+          : charactersData;
         setData(data);
         setPageQty(Math.ceil(data.count / CHARACTER_PER_PAGE));
-        setLoading(false);
       } catch (error) {
+        console.error('Error fetching data:', error);
         setError(true);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -58,10 +57,12 @@ const App = () => {
     try {
       const searchedData = await fetchSearchCharacters(searchedValue);
       setData(searchedData);
-      setLoading(false);
     } catch (error) {
+      console.error('Error during search:', error);
       setError(true);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 

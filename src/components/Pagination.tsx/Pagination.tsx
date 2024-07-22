@@ -1,50 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import './styles.css';
 import { Link } from 'react-router-dom';
+
+import './styles.css';
 
 interface IPaginationProps {
   currentPage: number;
-  handlePage: (arg: number) => void;
+  handlePage: (page: number) => void;
   pageQty: number;
 }
 
 const Pagination = ({ currentPage, handlePage, pageQty }: IPaginationProps) => {
-  const [renderedPages, setRenderedPages] = useState<number[]>([]);
-  const [startPosition, setStartPosition] = useState(1);
+  const [pages, setPages] = useState<number[]>([]);
 
   useEffect(() => {
-    renderPages();
-  }, [startPosition]);
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(pageQty, startPage + 4);
 
-  const renderPages = () => {
-    const pagesNumbers: number[] = [];
-    const lastPosition = startPosition + 5;
-
-    for (let i = startPosition; i < lastPosition; i++) {
-      if (
-        renderedPages[renderedPages.length - 1] >= pageQty ||
-        startPosition < 1
-      )
-        return;
-      pagesNumbers.push(i);
+    const pagesArray = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pagesArray.push(i);
     }
 
-    setRenderedPages(() => pagesNumbers);
-  };
+    setPages(pagesArray);
+  }, [currentPage, pageQty]);
 
-  const handlePrevPage = (position: number) => {
-    handlePage(position);
-
-    if (currentPage < renderedPages[2]) {
-      setStartPosition(() => startPosition - 1);
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      handlePage(currentPage - 1);
     }
   };
 
-  const handleNextPage = (position: number) => {
-    handlePage(position);
-
-    if (currentPage > renderedPages[2]) {
-      setStartPosition(() => startPosition + 1);
+  const handleNextPage = () => {
+    if (currentPage < pageQty) {
+      handlePage(currentPage + 1);
     }
   };
 
@@ -52,31 +40,28 @@ const Pagination = ({ currentPage, handlePage, pageQty }: IPaginationProps) => {
     <div className="pagination">
       <button
         className="pagination-btn"
-        onClick={() => handlePrevPage(currentPage - 1)}
+        onClick={handlePrevPage}
+        disabled={currentPage === 1}
       >
         Prev
       </button>
 
       <ul className="pages">
-        {renderedPages.map((page) => {
-          let className = 'page';
-          if (currentPage === page) className = 'page active-page';
-
-          return (
-            <li
-              key={page}
-              className={className}
-              onClick={() => handlePage(page)}
-            >
-              <Link to={`?page=${page}`}>{page}</Link>
-            </li>
-          );
-        })}
+        {pages.map((page) => (
+          <li
+            key={page}
+            className={`page ${currentPage === page ? 'active-page' : ''}`}
+            onClick={() => handlePage(page)}
+          >
+            <Link to={`?page=${page}`}>{page}</Link>
+          </li>
+        ))}
       </ul>
 
       <button
         className="pagination-btn"
-        onClick={() => handleNextPage(currentPage + 1)}
+        onClick={handleNextPage}
+        disabled={currentPage === pageQty}
       >
         Next
       </button>
