@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import './styles.css';
 
@@ -16,8 +17,10 @@ const Search = ({ handleSearch }: ISearchProps) => {
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleSearch(inputValue);
-    localStorage.setItem('searchValue', inputValue);
+    if (inputValue.trim()) {
+      handleSearch(inputValue);
+      localStorage.setItem('searchValue', inputValue);
+    }
   };
 
   return (
