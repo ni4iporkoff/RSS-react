@@ -10,7 +10,8 @@
     "format:fix": "prettier --write ./src",
     "preview": "vite preview",
     "prepare": "husky install",
-    "test": "vitest --coverage"
+    "test": "vitest --coverage",
+    "test:ci": "vitest run --coverage"
   },
   "husky": {
     "hooks": {

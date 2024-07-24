@@ -1,5 +1,8 @@
-echo "Running tests..."
-npm run test
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running tests before push..."
+npm run test:ci
 test_result=$?
 echo "Test result: $test_result"
 
