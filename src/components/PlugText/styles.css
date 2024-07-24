@@ -1,0 +1,6 @@
+.plug {
+  display: flex;
+  height: 20rem;
+  justify-content: center;
+  align-items: center;
+}
