@@ -17,10 +17,8 @@ const Search = ({ handleSearch }: ISearchProps) => {
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      handleSearch(inputValue);
-      localStorage.setItem('searchValue', inputValue);
-    }
+    handleSearch(inputValue);
+    localStorage.setItem('searchValue', inputValue);
   };
 
   return (

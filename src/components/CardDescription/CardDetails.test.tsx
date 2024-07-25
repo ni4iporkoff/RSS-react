@@ -1,55 +1,123 @@
-// src/components/CardDescription/CardDetails.test.tsx
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom'; // Используем для расширенных матчеров, таких как .toBeInTheDocument()
-import { vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
+import { configureStore } from '@reduxjs/toolkit';
+import characterReducer from '../../store/features/characterSlice';
 import CardDetails from './CardDetails';
 
-// Мок данных для useLoaderData
-const mockData = {
-  results: [
-    {
-      name: 'Luke Skywalker',
-      height: '172',
-      mass: '77',
-      hair_color: 'blond',
-      eye_color: 'blue',
-      birth_year: '19BBY',
-      gender: 'male',
-      films: ['A New Hope', 'The Empire Strikes Back'],
-      vehicles: ['Speeder Bike'],
+interface CharacterState {
+  character: {
+    count: number;
+    next: string;
+    previous: string;
+    results: {
+      name: string;
+      height: string;
+      mass: string;
+      hair_color: string;
+      eye_color: string;
+      birth_year: string;
+      gender: string;
+      films: string[];
+      vehicles: string[];
+    }[];
+  } | null;
+  loading: boolean;
+  error: boolean;
+}
+
+const createTestStore = (initialState: CharacterState) =>
+  configureStore({
+    reducer: {
+      character: characterReducer,
     },
-  ],
-};
+    preloadedState: { character: initialState },
+  });
 
-// Мокируем модуль react-router-dom
-vi.mock('react-router-dom', async (importOriginal) => {
-  const original = await importOriginal();
-  return {
-    ...original,
-    useLoaderData: () => mockData,
-    MemoryRouter: original.MemoryRouter,
-  };
-});
+const renderWithStore = (
+  ui: React.ReactElement,
+  store: ReturnType<typeof createTestStore>
+) =>
+  render(
+    <Provider store={store}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </Provider>
+  );
 
-describe('CardDetails Component', () => {
-  test('renders card details with correct data', () => {
-    render(
-      <MemoryRouter>
-        <CardDetails />
-      </MemoryRouter>
-    );
+describe('CardDetails', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-    // Проверяем, что все данные отображаются корректно
-    expect(screen.getByText('Name: Luke Skywalker')).toBeInTheDocument();
-    expect(screen.getByText('Height: 172')).toBeInTheDocument();
-    expect(screen.getByText('Mass: 77')).toBeInTheDocument();
-    expect(screen.getByText('Hair color: blond')).toBeInTheDocument();
-    expect(screen.getByText('Eye color: blue')).toBeInTheDocument();
-    expect(screen.getByText('Birth year: 19BBY')).toBeInTheDocument();
-    expect(screen.getByText('Gender: male')).toBeInTheDocument();
-    expect(screen.getByText('Films: 2')).toBeInTheDocument(); // films.length = 2
-    expect(screen.getByText('Vehicles: 1')).toBeInTheDocument(); // vehicles.length = 1
+  it('should display character details when data is loaded', async () => {
+    const initialState: CharacterState = {
+      character: {
+        count: 1,
+        next: '',
+        previous: '',
+        results: [
+          {
+            name: 'Luke Skywalker',
+            height: '172',
+            mass: '77',
+            hair_color: 'blond',
+            eye_color: 'blue',
+            birth_year: '19BBY',
+            gender: 'male',
+            films: ['A New Hope', 'The Empire Strikes Back'],
+            vehicles: ['Speeder Bike'],
+          },
+        ],
+      },
+      loading: false,
+      error: false,
+    };
+
+    const store = createTestStore(initialState);
+
+    renderWithStore(<CardDetails />, store);
+
+    const character = initialState.character?.results[0];
+    if (character) {
+      expect(screen.getByText(`Name: ${character.name}`)).toBeInTheDocument();
+      expect(
+        screen.getByText(`Height: ${character.height}`)
+      ).toBeInTheDocument();
+      expect(screen.getByText(`Mass: ${character.mass}`)).toBeInTheDocument();
+      expect(
+        screen.getByText(`Hair color: ${character.hair_color}`)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(`Eye color: ${character.eye_color}`)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(`Birth year: ${character.birth_year}`)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(`Gender: ${character.gender}`)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(`Films: ${character.films.length}`)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(`Vehicles: ${character.vehicles.length}`)
+      ).toBeInTheDocument();
+    }
+  });
+
+  it('should display Loader with correct alt text when loading', () => {
+    const initialState: CharacterState = {
+      character: null,
+      loading: true,
+      error: false,
+    };
+
+    const store = createTestStore(initialState);
+
+    renderWithStore(<CardDetails />, store);
+
+    expect(screen.getByAltText('Loading...')).toBeInTheDocument();
   });
 });

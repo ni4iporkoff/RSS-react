@@ -59,13 +59,4 @@ describe('Cards Component', () => {
     const characterElements = screen.queryAllByRole('listitem');
     expect(characterElements).toHaveLength(0);
   });
-
-  test('displays correct current page from URL', () => {
-    const { container } = renderWithRouter(
-      <Cards fetchedData={mockCharacters} />,
-      { route: '/?page=3' }
-    );
-    expect(container.querySelector('ul')).toBeInTheDocument();
-    expect(console.log).toHaveBeenCalledWith('3');
-  });
 });

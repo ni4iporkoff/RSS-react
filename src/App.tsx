@@ -8,80 +8,57 @@ import Pagination from './components/Pagination.tsx/Pagination';
 import Loader from './components/Loader/Loader';
 import PlugText from './components/PlugText/PlugText';
 
-import { fetchCharacters, fetchSearchCharacters } from './lib/data';
-import { IData } from './lib/definitions';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchCharactersAsync,
+  fetchSearchCharactersAsync,
+  selectCharacters,
+  setError,
+} from './store/features/charactersSlice';
+import { AppDispatch } from './store/store';
+
 import './App.css';
 
 interface ICharactersLoaderData {
-  charactersData: IData;
   initialPage: string | undefined;
 }
 
 const App = () => {
-  const { charactersData, initialPage } =
-    useLoaderData() as ICharactersLoaderData;
+  const { initialPage } = useLoaderData() as ICharactersLoaderData;
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { data, loading, error, pageQty } = useSelector(selectCharacters);
 
   const navigate = useNavigate();
 
-  const [data, setData] = useState<IData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(Number(initialPage) || 1);
-  const [pageQty, setPageQty] = useState(0);
-  const CHARACTER_PER_PAGE = 10;
 
   const searchValue = localStorage.getItem('searchValue') || '';
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = searchValue
-          ? await fetchSearchCharacters(searchValue)
-          : charactersData;
-        setData(data);
-        setPageQty(Math.ceil(data.count / CHARACTER_PER_PAGE));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [charactersData, searchValue]);
-
-  const handleSearch = async (searchedValue: string) => {
-    setLoading(true);
-
-    try {
-      const searchedData = await fetchSearchCharacters(searchedValue);
-      setData(searchedData);
-    } catch (error) {
-      console.error('Error during search:', error);
-      setError(true);
-      throw error;
-    } finally {
-      setLoading(false);
+    if (searchValue) {
+      dispatch(fetchSearchCharactersAsync(searchValue));
+    } else {
+      dispatch(fetchCharactersAsync(currentPage.toString()));
     }
+  }, [dispatch, currentPage, searchValue]);
+
+  const handleSearch = (searchedValue: string) => {
+    dispatch(fetchSearchCharactersAsync(searchedValue));
   };
 
   const generateError = () => {
-    setError(true);
+    dispatch(setError(true));
   };
 
   const fetchedData = data?.results || [];
   if (error) throw new Error('Error in App');
 
-  const handlePage = async (page: number) => {
+  const handlePage = (page: number) => {
     if (page < 1 || page > pageQty) return;
-    setLoading(true);
     navigate(`?page=${page}`);
-
-    setCurrentPage(() => page);
-    const pageData = await fetchCharacters(page.toString());
-    setData(pageData);
-    setLoading(false);
+    setCurrentPage(page);
+    dispatch(fetchCharactersAsync(page.toString()));
   };
 
   return (
@@ -89,7 +66,7 @@ const App = () => {
       <header className="header">
         <Search handleSearch={handleSearch} />
         <button onClick={generateError} className="error-btn">
-          Click for generate error
+          Click to generate error
         </button>
       </header>
       <main className="main">
@@ -105,7 +82,6 @@ const App = () => {
             </div>
           </section>
         )}
-
         <Pagination
           currentPage={currentPage}
           handlePage={handlePage}

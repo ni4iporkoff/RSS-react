@@ -12,7 +12,6 @@ const Cards = ({ fetchedData }: ICardsProps) => {
   const characters = fetchedData;
   const location = useLocation();
   const currentPage = new URLSearchParams(location.search).get('page') || 1;
-  console.log(currentPage);
 
   return (
     <ul className="cards">

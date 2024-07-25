@@ -1,10 +1,37 @@
-import React from 'react';
-import { useLoaderData } from 'react-router-dom';
-import { ICharacter, IData } from '../../lib/definitions';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { fetchCharacterAsync } from '../../store/features/characterSlice';
+import { AppDispatch, RootState } from '../../store/store';
+import { ICharacter } from '../../lib/definitions';
+
 import './styles.css';
+import Loader from '../Loader/Loader';
 
 const CardDetails = () => {
-  const { results } = useLoaderData() as IData;
+  const dispatch = useDispatch<AppDispatch>();
+  const { cardID } = useParams<{ cardID: string }>();
+  const { character, loading, error } = useSelector(
+    (state: RootState) => state.character
+  );
+
+  useEffect(() => {
+    if (cardID) {
+      dispatch(fetchCharacterAsync(cardID));
+    }
+  }, [dispatch, cardID]);
+
+  if (loading) {
+    return (
+      <div className="card-details">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error || !character) {
+    return <div>Error loading character details.</div>;
+  }
 
   const {
     name,
@@ -16,7 +43,7 @@ const CardDetails = () => {
     gender,
     films,
     vehicles,
-  } = results[0] as ICharacter;
+  } = character.results[0] as ICharacter;
 
   return (
     <div className="card-details">
